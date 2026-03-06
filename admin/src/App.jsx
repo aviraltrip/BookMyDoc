@@ -1,9 +1,28 @@
-import React from 'react'
+import React, { useContext } from "react";
+import Login from "./pages/Login";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AdminContext } from "./context/AdminContext";
+import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 
 const App = () => {
-  return (
-    <div>App</div>
-  )
-}
+  const { aToken } = useContext(AdminContext);
 
-export default App
+  return aToken ? (
+    <div className='bg-[#F8F9FD] min-h-screen'>
+      <ToastContainer />
+      <Navbar />
+      <div className='flex items-start'>
+        <Sidebar />
+      </div>
+    </div>
+  ) : (
+    <>
+      <Login />
+      <ToastContainer />
+    </>
+  );
+};
+
+export default App;
