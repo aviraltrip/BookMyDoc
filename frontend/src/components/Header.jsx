@@ -1,47 +1,39 @@
-import React from 'react'
-import { assets } from '../assets/assets'
+import React from 'react';
 
 const Header = () => {
   return (
-    <div className='flex flex-col md:flex-row flex-wrap bg-[#5F6FFF] rounded-lg px-6 md:px-10 lg:px-20'>
+    <div className="bg-[#5F6FFF] rounded-xl px-5 py-8 md:px-10 md:py-10 lg:px-16 text-white shadow-md">
 
-      {/* -------- Left Side -------- */}
-      <div className='md:w-1/2 flex flex-col items-start justify-center gap-4 py-10 md:py-[8vw]'>
+      <div className="max-w-4xl mx-auto flex flex-col items-center md:items-start gap-5 md:gap-6 text-center md:text-left">
 
-        <p className='text-3xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight'>
-          Book Appointment <br /> With Trusted Doctors
+        {/* Title - smaller but still strong */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight">
+          Book Appointment With
+          <br className="hidden sm:block" />
+          Trusted Doctors
+        </h1>
+
+        {/* Description - more compact */}
+        <p className="text-sm sm:text-base md:text-lg opacity-95 max-w-2xl">
+          Browse our list of trusted doctors and schedule your appointment easily — no hassle.
         </p>
 
-        <div className='flex flex-col md:flex-row items-center gap-3 text-white text-sm'>
-          <img className='w-28' src={assets.group_profiles} alt="" />
-          <p>
-            Simply browse through our extensive list of trusted doctors,
-            <br className='hidden sm:block' />
-            schedule your appointment hassle-free.
-          </p>
-        </div>
-
+        {/* Button - prominent but not oversized */}
         <a
           href="#speciality"
-          className='flex items-center gap-2 bg-white px-8 py-3 rounded-full text-gray-700 text-sm hover:scale-105 transition-all duration-300'
+          className="mt-2 inline-flex items-center gap-2 bg-white px-6 py-2.5 rounded-full 
+                     text-[#5F6FFF] font-medium text-sm sm:text-base 
+                     hover:bg-gray-100 hover:shadow-md transition-all duration-300"
         >
           Book appointment
-          <img className='w-3' src={assets.arrow_icon} alt="" />
+          <span className="text-base">→</span>
+          {/* or keep your arrow icon if you prefer:
+          <img className="w-3.5" src={assets.arrow_icon} alt="" /> */}
         </a>
 
       </div>
-
-      {/* -------- Right Side -------- */}
-      <div className='md:w-1/2 relative mt-8 md:mt-0'>
-        <img
-          className='w-full md:absolute bottom-0 h-auto rounded-lg'
-          src={assets.header_img}
-          alt=""
-        />
-      </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

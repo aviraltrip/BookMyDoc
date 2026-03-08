@@ -1,4 +1,4 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import {toast} from 'react-toastify';
 
@@ -27,7 +27,7 @@ const AppContextProvider = (props) => {
         
     } catch (error) {
         console.log(error)
-        toast.error(error.message);
+        toast.error(error.message)
         
     }
   }
