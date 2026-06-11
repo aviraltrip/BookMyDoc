@@ -6,6 +6,7 @@ import { assets } from '../assets/assets';
 const Appointment = () => {
   const { docId } = useParams();
   const { doctors, currencySymbol } = useContext(AppContext);
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
@@ -32,7 +33,7 @@ const Appointment = () => {
 
       //setting end tie of the date with index
       let endTime = new Date()
-      endTime.setDate(today.getDate()+1)
+      endTime.setDate(today.getDate()+i)
       endTime.setHours(21,0,0,0)
 
       //setting hours
@@ -67,7 +68,11 @@ const Appointment = () => {
 
   useEffect(() => {
     getAvailableSlots()
-    }, [docInfo]);
+  }, [docInfo]);
+  
+  useEffect(() => {
+    console.log(docSlots)
+  }, [docSlots]);
 
   if (!docInfo) {
     return (
@@ -142,7 +147,26 @@ const Appointment = () => {
         </div>
       </div>
 
-      {/* You can add booking button / calendar section here later */}
+      {/* Booking Slots */}
+      <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>
+        <p>Booking slots</p>
+        <div>
+          {docSlots && docSlots.length > 0 && docSlots.map((item, index) => {
+            const slot = item[0];
+            const dateObj = slot?.datetime ? new Date(slot.datetime) : null;
+            return (
+            <div key={index}>
+              <p>
+                {dateObj && daysOfWeek ? daysOfWeek[dateObj.getDay()] : ''}
+          </p>
+          <p>
+            {dateObj ? dateObj.getDate() : ''}
+          </p>
+        </div>
+      );
+    })}
+    </div>
+    </div>
     </div>
   );
 };
