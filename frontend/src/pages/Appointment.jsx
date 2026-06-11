@@ -34,8 +34,33 @@ const Appointment = () => {
       let endTime = new Date()
       endTime.setDate(today.getDate()+1)
       endTime.setHours(21,0,0,0)
+
+      //setting hours
+      if (today.getDate() === currentDate.getDate()) {
+        currentDate.setHours(currentDate.getHours()>10 ? currentDate.getHours() + 1: 10)
+        currentDate.setMinutes(currentDate.getMinutes()>30?30:0)
+      } else {
+        currentDate.setHours(10)
+        currentDate.setMinutes(0)
+      }
+
+      let timeSlots =[]
+      while (currentDate < endTime) {
+        let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+        //add slot to array
+        timeSlots.push({
+          datetime: new Date(currentDate),
+          time: formattedTime
+        })
+
+        //increment current time by 30 mins
+        currentDate.setMinutes(currentDate.getMinutes() + 30)
+      }
+      setDocSlots(prev => ([...prev,...timeSlots]))
+    }
   }
-  }
+
   useEffect(() => {
     fetchDocInfo();
   }, [doctors, docId]);
