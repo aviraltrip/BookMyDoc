@@ -88,7 +88,7 @@ const Appointment = () => {
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Doctor Image */}
-          <div className="w-40 h-40 flex-shrink-0">
+          <div className="w-40 h-40 shrink-0">
             <img
               src={docInfo.image}
               alt={docInfo.name}
@@ -150,23 +150,31 @@ const Appointment = () => {
       {/* Booking Slots */}
       <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>
         <p>Booking slots</p>
-        <div>
-          {docSlots && docSlots.length > 0 && docSlots.map((item, index) => {
-            const slot = item[0];
-            const dateObj = slot?.datetime ? new Date(slot.datetime) : null;
-            return (
-            <div key={index}>
-              <p>
-                {dateObj && daysOfWeek ? daysOfWeek[dateObj.getDay()] : ''}
-          </p>
-          <p>
-            {dateObj ? dateObj.getDate() : ''}
-          </p>
+        <div className='mt-3 flex flex-wrap gap-2'>
+          {docSlots && docSlots.length > 0 ? (
+            docSlots.map((item, index) => (
+              <button
+                key={index}
+                type='button'
+                onClick={() => {
+                  setSlotIndex(index);
+                  setSlotTime(item.time);
+                }}
+                className={`rounded-full border px-3 py-2 text-sm ${
+                  slotIndex === index ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-gray-50 text-gray-700'
+                }`}
+              >
+                {item.time}
+              </button>
+            ))
+          ) : (
+            <p className='text-sm text-gray-500'>No slots available</p>
+          )}
         </div>
-      );
-    })}
-    </div>
-    </div>
+        <button type='button' className='mt-4 rounded-full bg-blue-600 px-4 py-2 text-sm text-white'>
+          Book an appointment
+        </button>
+      </div>
     </div>
   );
 };
