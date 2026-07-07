@@ -1,4 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../context/AppContext'
 
 const RelatedDoctors = ({speciality,docId}) => {
     const {doctors} = useContext(AppContext)
@@ -9,7 +11,9 @@ const RelatedDoctors = ({speciality,docId}) => {
         if (doctors.length > 0 && speciality) {
             const doctorsData = doctors.filter((doc) => doc.speciality === speciality && doc._id !== docId)
             setRelDoc(doctorsData)
-        }) [doctors, speciality, docId]
+        }
+    }, [doctors, speciality, docId])
+
   return (
     <div className="flex flex-col items-center gap-4 py-16 text-gray-900 md:mx-10">
 
@@ -23,7 +27,11 @@ const RelatedDoctors = ({speciality,docId}) => {
 
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pt-8 px-4 sm:px-0">
         {relDoc.slice(0, 5).map((item, index) => (
-          <div onClick={()=>navigate(`/appointment/${item._id}`) scrollto (0,0)}
+          <div
+            onClick={() => {
+              navigate(`/appointment/${item._id}`);
+              window.scrollTo(0, 0);
+            }}
             key={index}
             className="border border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:shadow-blue-100/40 transition-all duration-300 hover:-translate-y-1 group"
           >
@@ -48,11 +56,17 @@ const RelatedDoctors = ({speciality,docId}) => {
         ))}
       </div>
 
-      <button onClick={()=> { navigate('/doctors'); scrollTo(0,0)}} className="mt-12 bg-blue-50 text-gray-700 px-10 py-3.5 rounded-full text-sm font-medium
-       hover:bg-blue-100 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">more</button>
+      <button
+        onClick={() => {
+          navigate('/doctors');
+          window.scrollTo(0, 0);
+        }}
+        className="mt-12 bg-blue-50 text-gray-700 px-10 py-3.5 rounded-full text-sm font-medium hover:bg-blue-100 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+      >
+        more
+      </button>
     </div>
   );
-  )
 }
 
 export default RelatedDoctors
