@@ -12,6 +12,7 @@ const Appointment = () => {
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState('');
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
 
   const fetchDocInfo = () => {
     if (!doctors || !docId) return;
@@ -21,45 +22,37 @@ const Appointment = () => {
   };
 
   const getAvailableSlots = async () => {
-    setDocSlots([])
-
-    //getting current date
-    let today = new Date()
+    const slotsByDay = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 7; i++) {
-      //getting date with index
-      let currentDate = new Date(today)
-      currentDate.setDate(today.getDate()+i)
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
 
-      //setting end tie of the date with index
-      let endTime = new Date()
-      endTime.setDate(today.getDate()+i)
-      endTime.setHours(21,0,0,0)
+      const daySlots = [];
+      const slotStart = new Date(currentDate);
+      slotStart.setHours(i === 0 ? Math.max(10, new Date().getHours() + (new Date().getMinutes() >= 30 ? 1 : 0)) : 10, 0, 0, 0);
 
-      //setting hours
-      if (today.getDate() === currentDate.getDate()) {
-        currentDate.setHours(currentDate.getHours()>10 ? currentDate.getHours() + 1: 10)
-        currentDate.setMinutes(currentDate.getMinutes()>30?30:0)
-      } else {
-        currentDate.setHours(10)
-        currentDate.setMinutes(0)
+      const slotEnd = new Date(currentDate);
+      slotEnd.setHours(21, 0, 0, 0);
+
+      let currentSlot = new Date(slotStart);
+      while (currentSlot < slotEnd) {
+        daySlots.push({
+          datetime: new Date(currentSlot),
+          time: currentSlot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        });
+        currentSlot.setMinutes(currentSlot.getMinutes() + 30);
       }
 
-      let timeSlots =[]
-      while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
-        //add slot to array
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime
-        })
-
-        //increment current time by 30 mins
-        currentDate.setMinutes(currentDate.getMinutes() + 30)
-      }
-      setDocSlots(prev => ([...prev,...timeSlots]))
+      slotsByDay.push({
+        date: currentDate,
+        slots: daySlots,
+      });
     }
+
+    setDocSlots(slotsByDay);
   }
 
   useEffect(() => {
@@ -84,10 +77,8 @@ const Appointment = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Doctor Header */}
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Doctor Image */}
           <div className="w-40 h-40 shrink-0">
             <img
               src={docInfo.image}
@@ -96,7 +87,6 @@ const Appointment = () => {
             />
           </div>
 
-          {/* Main Info */}
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-semibold text-gray-900">
@@ -119,7 +109,6 @@ const Appointment = () => {
               </span>
             </div>
 
-            {/* About Section */}
             <div className="mt-6">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="text-lg font-medium text-gray-900">About</h3>
@@ -134,7 +123,6 @@ const Appointment = () => {
               </p>
             </div>
 
-            {/* Fee */}
             <div className="mt-6">
               <p className="text-gray-700">
                 Appointment fee:{' '}
@@ -147,31 +135,53 @@ const Appointment = () => {
         </div>
       </div>
 
-      {/* Booking Slots */}
       <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>
         <p>Booking slots</p>
         <div className='mt-3 flex flex-wrap gap-2'>
           {docSlots && docSlots.length > 0 ? (
-            docSlots.map((item, index) => (
+            docSlots.map((day, index) => (
               <button
                 key={index}
                 type='button'
                 onClick={() => {
-                  setSlotIndex(index);
-                  setSlotTime(item.time);
+                  setSelectedDayIndex(index);
+                  setSlotIndex(0);
+                  setSlotTime('');
                 }}
-                className={`rounded-full border px-3 py-2 text-sm ${
-                  slotIndex === index ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-gray-50 text-gray-700'
+                className={`rounded-full border px-4 py-2 text-sm ${
+                  selectedDayIndex === index ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-white text-gray-700'
                 }`}
               >
-                {item.time}
+                <div className='text-center'>
+                  <div>{daysOfWeek[day.date.getDay()]}</div>
+                  <div className='text-base font-semibold'>{day.date.getDate()}</div>
+                </div>
               </button>
             ))
           ) : (
             <p className='text-sm text-gray-500'>No slots available</p>
           )}
         </div>
-        <button type='button' className='mt-4 rounded-full bg-blue-600 px-4 py-2 text-sm text-white'>
+
+        <div className='mt-6 grid grid-cols-3 gap-2'>
+          {docSlots[selectedDayIndex]?.slots?.map((slot, index) => (
+            <button
+              key={index}
+              type='button'
+              onClick={() => {
+                setSlotIndex(index);
+                setSlotTime(slot.time);
+              }}
+              className={`rounded-full border px-3 py-2 text-sm ${
+                slotIndex === index ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-gray-50 text-gray-700'
+              }`}
+            >
+              {slot.time}
+            </button>
+          ))}
+        </div>
+
+        <button type='button' className='mt-6 rounded-full bg-blue-600 px-4 py-2 text-sm text-white'>
           Book an appointment
         </button>
       </div>
