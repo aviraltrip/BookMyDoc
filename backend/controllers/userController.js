@@ -91,24 +91,32 @@ const getProfile = async (req,res) => {
 //API to update user profile
 const updateProfile = async (req,res) => {
   try {
-    const {userId, name, phone, address, dob, gender } = req.body
+    const { userId, name, phone, address, dob, gender } = req.body
     const imageFile = req.file
+
+    if (!userId) {
+      return res.json({ success: false, message: 'Missing userId' })
+    }
 
     if (!name || !phone || !dob || !gender) {
       return res.json({success:false,message:"Data Missing"})
     }
 
-    await userModel.findByIdAndUpdate(userId,{name,phone,address:JSON.parse(address),dob,gender})
+    const updatedData = {
+      name,
+      phone,
+      address: JSON.parse(address),
+      dob,
+      gender,
+    }
 
     if (imageFile) {
-
-      //upload image to cloudinary
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
-      const imageURL = imageUpload.secure_url
-
-      await userModel.findByIdAndUpdate(userId, { image: imageURL })
+      updatedData.image = imageUpload.secure_url
     }
-    res.json({success:true,message:"Profile Updated"})
+
+    const updatedUser = await userModel.findByIdAndUpdate(userId, updatedData, { new: true }).select('-password')
+    res.json({ success: true, message: 'Profile Updated', userData: updatedUser })
   } catch(error) {
     console.log(error)
     res.json({success:false,message:error.message})

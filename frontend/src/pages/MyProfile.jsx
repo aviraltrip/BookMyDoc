@@ -8,6 +8,7 @@ const MyProfile = () => {
 
   const { userData, setUserData, backendUrl, token, loadUserData } = useContext(AppContext)
   const [isEdit, setIsEdit] = useState(false)
+  const [profileForm, setProfileForm] = useState(null)
   const [imageFile, setImageFile] = useState(null)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -15,12 +16,27 @@ const MyProfile = () => {
     return <div className='p-6 text-center text-gray-500'>Loading profile...</div>
   }
 
+  const startEdit = () => {
+    setProfileForm({
+      name: userData.name || '',
+      phone: userData.phone || '',
+      address: {
+        line1: userData.address?.line1 || '',
+        line2: userData.address?.line2 || '',
+      },
+      gender: userData.gender || 'Not Selected',
+      dob: userData.dob || '',
+    })
+    setImageFile(null)
+    setIsEdit(true)
+  }
+
   const handleInputChange = (field, value) => {
-    setUserData(prev => ({ ...prev, [field]: value }))
+    setProfileForm(prev => ({ ...prev, [field]: value }))
   }
 
   const handleAddressChange = (field, value) => {
-    setUserData(prev => ({ ...prev, address: { ...(prev.address || {}), [field]: value } }))
+    setProfileForm(prev => ({ ...prev, address: { ...(prev.address || {}), [field]: value } }))
   }
 
   const handleImageChange = (event) => {
@@ -31,19 +47,22 @@ const MyProfile = () => {
   }
 
   const saveProfile = async () => {
-    if (!userData.name || !userData.phone || !userData.dob || !userData.gender) {
+    if (!profileForm?.name || !profileForm?.phone || !profileForm?.dob || !profileForm?.gender) {
       toast.error('Please complete all required fields')
       return
     }
 
     const formData = new FormData()
-    formData.append('name', userData.name)
-    formData.append('phone', userData.phone)
-    formData.append('address', JSON.stringify(userData.address || { line1: '', line2: '' }))
-    formData.append('gender', userData.gender)
-    formData.append('dob', userData.dob)
+    formData.append('name', profileForm.name)
+    formData.append('phone', profileForm.phone)
+    formData.append('address', JSON.stringify(profileForm.address || { line1: '', line2: '' }))
+    formData.append('gender', profileForm.gender)
+    formData.append('dob', profileForm.dob)
     if (imageFile) {
       formData.append('image', imageFile)
+    }
+    if (userData?._id) {
+      formData.append('userId', userData._id)
     }
 
     try {
@@ -57,7 +76,12 @@ const MyProfile = () => {
       if (data?.success) {
         toast.success('Profile updated successfully')
         setImageFile(null)
-        await loadUserData()
+        if (data.userData) {
+          setUserData(data.userData)
+        } else {
+          await loadUserData()
+        }
+        setProfileForm(null)
         setIsEdit(false)
       } else {
         toast.error(data?.message || 'Failed to update profile')
@@ -81,7 +105,7 @@ const MyProfile = () => {
           <input
             className='bg-gray-50 text-3xl font-medium max-w-60'
             type='text'
-            value={userData.name || ''}
+            value={profileForm?.name || ''}
             onChange={(e) => handleInputChange('name', e.target.value)}
           />
         ) : (
@@ -102,7 +126,7 @@ const MyProfile = () => {
             <input
               className='bg-gray-100 max-w-52'
               type='text'
-              value={userData.phone || ''}
+              value={profileForm?.phone || ''}
               onChange={(e) => handleInputChange('phone', e.target.value)}
             />
           ) : (
@@ -115,14 +139,14 @@ const MyProfile = () => {
               <input
                 className='bg-gray-100 mb-2 w-full'
                 type='text'
-                value={userData.address?.line1 || ''}
+                value={profileForm?.address?.line1 || ''}
                 onChange={(e) => handleAddressChange('line1', e.target.value)}
                 placeholder='Line 1'
               />
               <input
                 className='bg-gray-100 w-full'
                 type='text'
-                value={userData.address?.line2 || ''}
+                value={profileForm?.address?.line2 || ''}
                 onChange={(e) => handleAddressChange('line2', e.target.value)}
                 placeholder='Line 2'
               />
@@ -145,7 +169,7 @@ const MyProfile = () => {
             <select
               className='max-w-20 bg-gray-100'
               onChange={(e) => handleInputChange('gender', e.target.value)}
-              value={userData.gender || 'Not Selected'}
+              value={profileForm?.gender || 'Not Selected'}
             >
               <option value='Male'>Male</option>
               <option value='Female'>Female</option>
@@ -160,7 +184,7 @@ const MyProfile = () => {
             <input
               className='max-w-48 bg-gray-100'
               type='date'
-              value={userData.dob || ''}
+              value={profileForm?.dob || ''}
               onChange={(e) => handleInputChange('dob', e.target.value)}
             />
           ) : (
@@ -184,14 +208,29 @@ const MyProfile = () => {
         </div>
       )}
 
-      <div className='mt-10'>
+      <div className='mt-10 flex gap-4'>
         <button
+          type='button'
           className='border border-blue-600 px-8 py-2 rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
-          onClick={isEdit ? saveProfile : () => setIsEdit(true)}
+          onClick={isEdit ? saveProfile : startEdit}
           disabled={isSaving}
         >
           {isEdit ? (isSaving ? 'Saving...' : 'Save information') : 'Edit'}
         </button>
+        {isEdit && (
+          <button
+            type='button'
+            className='border border-gray-400 px-8 py-2 rounded-full hover:bg-gray-100 transition-all duration-300'
+            onClick={() => {
+              setIsEdit(false)
+              setProfileForm(null)
+              setImageFile(null)
+            }}
+            disabled={isSaving}
+          >
+            Cancel
+          </button>
+        )}
       </div>
     </div>
   )
