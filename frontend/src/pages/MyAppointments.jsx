@@ -1,9 +1,61 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
 
 const MyAppointments = () => {
+  const { doctors = [], currencySymbol = '₹' } = useContext(AppContext)
+
+  const appointments = doctors
+
   return (
-    <div>
-        
+    <div className='max-w-6xl mx-auto px-4 py-8'>
+      <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6'>
+        <div>
+          <p className='text-sm font-semibold uppercase tracking-[0.2em] text-primary'>My Appointments</p>
+          <h2 className='text-2xl font-semibold text-gray-800'>Upcoming visits</h2>
+        </div>
+        <span className='rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-primary'>{appointments.length} booked</span>
+      </div>
+
+      {appointments.length === 0 ? (
+        <div className='rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-10 text-center text-gray-500'>
+          No appointments found yet.
+        </div>
+      ) : (
+        <div className='grid gap-5'>
+          {appointments.map((item, index) => (
+            <div key={item._id || index} className='flex items-center overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md'>
+              <img src={item.image} alt={item.name} className='h-24 w-24 object-cover p-3' />
+              <div className='flex flex-1 flex-col justify-between p-4'>
+                <div className='mb-2 flex items-start justify-between gap-4'>
+                  <div>
+                    <h3 className='text-lg font-semibold text-gray-800'>{item.name}</h3>
+                    <p className='text-sm font-medium text-primary'>{item.speciality}</p>
+                    <p className='mt-1 text-sm text-gray-600'>
+                      {item.address?.line1}
+                      <br />
+                      {item.address?.line2}
+                    </p>
+                  </div>
+                  <div className='ml-auto text-right'>
+                    <p className='text-sm text-gray-500'>Date & Time</p>
+                    <p className='text-sm font-medium text-gray-800'>12 Aug 2026 • 10:30 AM</p>
+                  </div>
+                </div>
+
+                <div className='mt-3 flex items-center justify-end gap-3'>
+                  <span className='mr-auto text-sm font-medium text-gray-700'>Fee: {currencySymbol}{item.fees ?? 500}</span>
+                  <button className='rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-300 hover:bg-blue-700'>
+                    Pay {currencySymbol}{item.fees ?? 500}
+                  </button>
+                  <button className='rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-300 hover:border-red-400 hover:text-red-500'>
+                    Cancel appointment
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
