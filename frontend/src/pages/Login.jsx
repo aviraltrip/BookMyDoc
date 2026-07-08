@@ -1,14 +1,37 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../context/AppContext'
+import { toast } from 'react-toastify'
 
 const Login = () => {
 
+  const { backendUrl, setToken } = useContext(AppContext)
   const [state, setState] = useState('Sign Up')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const navigate = useNavigate()
 
   const onSubmitHandler = async (event) => {
     event.preventDefault()
+
+    try {
+      const endpoint = state === 'Sign Up' ? '/api/user/register' : '/api/user/login'
+      const payload = state === 'Sign Up' ? { name, email, password } : { email, password }
+      const { data } = await axios.post(backendUrl + endpoint, payload)
+
+      if (data.success && data.token) {
+        localStorage.setItem('token', data.token)
+        setToken(data.token)
+        toast.success('Logged in successfully')
+        navigate('/my-profile')
+      } else {
+        toast.error(data.message || 'Authentication failed')
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Authentication failed')
+    }
   }
 
   return (
