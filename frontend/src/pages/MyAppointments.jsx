@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { AppContext } from '../context/AppContext'
@@ -9,17 +9,27 @@ const MyAppointments = () => {
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-  const formatAppointmentDate = (slotDate) => {
-    if (!slotDate) return 'TBD'
+  const formatAppointmentDate = (slotDate, dateValue) => {
+    if (slotDate) {
+      const dateArray = slotDate.split('_')
+      if (dateArray.length === 3) {
+        const day = dateArray[0]
+        const month = months[Number(dateArray[1]) - 1] || dateArray[1]
+        const year = dateArray[2]
+        return `${day} ${month} ${year}`
+      }
 
-    const dateArray = slotDate.split('_')
-    if (dateArray.length !== 3) return slotDate
+      return slotDate
+    }
 
-    const day = dateArray[0]
-    const month = months[Number(dateArray[1]) - 1] || dateArray[1]
-    const year = dateArray[2]
+    if (dateValue) {
+      const parsedDate = new Date(dateValue)
+      if (!Number.isNaN(parsedDate.getTime())) {
+        return parsedDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      }
+    }
 
-    return `${day} ${month} ${year}`
+    return 'TBD'
   }
 
   const getUserAppointments = async () => {
@@ -67,7 +77,8 @@ const MyAppointments = () => {
         <div className='grid gap-5'>
           {appointments.map((item, index) => {
             const doctor = item.docData || {}
-            const appointmentDate = formatAppointmentDate(item.slotDate)
+            const appointmentDate = formatAppointmentDate(item.slotDate, item.date)
+            const appointmentFee = doctor.fees ?? item.amount ?? 500
 
             return (
               <div
@@ -89,17 +100,17 @@ const MyAppointments = () => {
                     <div className='ml-auto text-right'>
                       <p className='text-sm text-gray-500'>Date & Time</p>
                       <p className='text-sm font-medium text-gray-800'>
-                        {appointmentDate} • {item.slotTime || 'Time TBD'}
+                        {appointmentDate} • {item.slotTime || item.time || 'Time TBD'}
                       </p>
                     </div>
                   </div>
 
                   <div className='mt-3 flex items-center justify-end gap-3'>
                     <span className='mr-auto text-sm font-medium text-gray-700'>
-                      Fee: {currencySymbol}{doctor.fees ?? item.amount ?? 500}
+                      Fee: {currencySymbol}{appointmentFee}
                     </span>
                     <button className='rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-300 hover:bg-blue-700'>
-                      Pay {currencySymbol}{doctor.fees ?? item.amount ?? 500}
+                      Pay {currencySymbol}{appointmentFee}
                     </button>
                     <button className='rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-300 hover:border-red-400 hover:text-red-500'>
                       Cancel appointment
