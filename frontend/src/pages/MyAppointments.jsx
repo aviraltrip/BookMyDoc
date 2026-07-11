@@ -39,7 +39,7 @@ const MyAppointments = () => {
       })
 
       if (data.success) {
-        setAppointments([...data.appointments].reverse())
+        setAppointments(data.appointments)
       } else {
         toast.error(data.message || 'Unable to load appointments')
       }
