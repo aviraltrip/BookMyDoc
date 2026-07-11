@@ -129,12 +129,26 @@ const MyAppointments = () => {
                     <span className='mr-auto text-sm font-medium text-gray-700'>
                       Fee: {currencySymbol}{appointmentFee}
                     </span>
-                    <button className='rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-300 hover:bg-blue-700'>
-                      Pay {currencySymbol}{appointmentFee}
-                    </button>
-                    <button className='rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-300 hover:border-red-400 hover:text-red-500'>
-                      Cancel appointment
-                    </button>
+                    {!item.cancelled && !item.isCompleted && (
+                      <button className='rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-300 hover:bg-blue-700'>
+                        Pay {currencySymbol}{appointmentFee}
+                      </button>
+                    )}
+                    {!item.cancelled && !item.isCompleted && (
+                      <button onClick={() => cancelAppointment(item._id)} className='rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-300 hover:border-red-400 hover:text-red-500'>
+                        Cancel appointment
+                      </button>
+                    )}
+                    {item.cancelled && !item.isCompleted && (
+                      <button className='rounded-full border border-red-500 bg-red-50 px-4 py-2 text-sm font-medium text-red-500 shadow-sm' disabled>
+                        Appointment cancelled
+                      </button>
+                    )}
+                    {item.isCompleted && (
+                      <button className='rounded-full border border-green-500 bg-green-50 px-4 py-2 text-sm font-medium text-green-500 shadow-sm' disabled>
+                        Completed
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
