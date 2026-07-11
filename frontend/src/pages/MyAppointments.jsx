@@ -85,7 +85,7 @@ const MyAppointments = () => {
           <h2 className='text-2xl font-semibold text-gray-800'>Upcoming visits</h2>
         </div>
         <span className='rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-primary'>
-          {appointments.length} booked
+          {appointments.filter(item => !item.cancelled && !item.isCompleted).length} booked
         </span>
       </div>
 
