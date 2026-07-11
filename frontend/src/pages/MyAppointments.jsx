@@ -49,6 +49,26 @@ const MyAppointments = () => {
     }
   }
 
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/cancel-appointment`,
+        { appointmentId },
+        { headers: { token } }
+      )
+
+      if (data.success) {
+        toast.success(data.message)
+        getUserAppointments()
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
   useEffect(() => {
     if (token) {
       getUserAppointments()
