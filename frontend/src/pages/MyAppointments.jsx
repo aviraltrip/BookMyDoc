@@ -49,6 +49,23 @@ const MyAppointments = () => {
     }
   }
 
+  const initPay = (order) => {
+
+
+  }
+
+  const appointmentRazorpay = async (appointmentId) => {
+    try {
+      const { data } = await axios.get(backendUrl + '/api/user/payment-razorpay', { appointmentId }, { headers: { token } })
+      if (data.success) {
+        initPay(data.order)
+      }
+
+    } catch (error) {
+
+    }
+  }
+
   const cancelAppointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
