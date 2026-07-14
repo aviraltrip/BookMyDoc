@@ -1,94 +1,75 @@
 # BookMyDoc
 
-BookMyDoc is a comprehensive MERN-stack medical appointment booking and practice management application. It consists of three main components: a client-facing React portal, an Admin & Doctor React panel, and a unified Node.js / Express backend REST API.
+BookMyDoc is a comprehensive MERN-stack medical appointment booking and practice management application. It features a patient portal, an admin/doctor management panel, and a unified Node.js/Express REST API.
 
 ---
 
 ## Features
 
-### 1. User Portal (Client Frontend)
-- **Doctor Directory:** Browse all registered doctors or filter by specialty categories (General Physician, Gynecologist, Dermatologist, Pediatrician, Neurologist, Gastroenterologist).
-- **Appointment Booking:** View doctor availability and book active 30-minute calendar slots for the next 7 days.
-- **My Appointments:** Track booking history, pay fees online, or cancel upcoming visits.
-- **Profile Management:** View and edit personal biography, profile image, contact details (phone, address), gender, and date of birth.
+### 💻 Patient Portal
+- **Doctor Directory:** Browse and filter doctors by specialty.
+- **Booking Calendar:** Schedule 30-minute slots for the next 7 days.
+- **My Appointments:** Manage booking history, pay fees online, or cancel upcoming visits.
+- **Profile Manager:** Update bio, profile photo, contact details, gender, and DOB.
 
-### 2. Admin Portal (Management Panel)
-- **Dashboard Overview:** Displays counts of Doctors, Appointments, and Patients, alongside a list of the 5 latest bookings with cancellation handling.
-- **Add Doctor:** Register new doctor credentials, degree, address, fees, speciality, and profile photos.
-- **Doctors List:** View and toggle availability check-boxes for registered doctors in real-time.
-- **All Appointments:** Table list tracking booking dates, patient ages, doctor assignments, and payment statuses.
+### ⚙️ Admin Panel
+- **Dashboard Overview:** Displays counts of doctors, appointments, and patients, plus the 5 latest bookings.
+- **Add Doctor:** Register new doctor credentials, bios, fee configurations, and photos.
+- **Doctors List:** View and toggle doctor availability in real-time.
+- **All Appointments:** Track booking calendars, calculated patient ages, and transaction statuses.
 
-### 3. Doctor Portal (Practice Management Backend)
-- **Practice Dashboard:** Track total appointments, unique patients treated, total earnings, and lists latest booking queues.
-- **Appointment Handler:** Triage appointments to mark them as completed or cancel them directly.
-- **Doctor Profile:** Edit practice details, fees, description, and availability.
+### 🩺 Doctor Portal (API Backed)
+- **Practice Dashboard:** Track total appointments, unique patients count, and earnings (completed visits).
+- **Appointment Actions:** Mark bookings as completed or cancel visits (which frees calendar slots).
+- **Doctor Profile:** Edit biography, fee structures, address, and availability.
 
-### 4. Robust Backend API
-- Role-based JSON Web Tokens (JWT) routing security (`atoken` for Admin, `dtoken` for Doctor, and `token` for Patient).
-- Cloudinary cloud storage image uploads.
-- Razorpay payment gateway integration for appointment booking checkouts.
-
----
-
-## Technical Stack
-
-| Component | Technologies |
-| :--- | :--- |
-| **Frontend & Admin** | React.js (Vite), Tailwind CSS v4, React Router DOM, Axios, React Toastify |
-| **Backend** | Node.js, Express.js, MongoDB (Mongoose), Cloudinary API, Razorpay SDK, JWT, Multer |
+### 🔒 Backend Architecture
+- **JWT Authorization:** Secured role-based authentication (`atoken` for Admin, `dtoken` for Doctor, `token` for Patient).
+- **Media Uploads:** Cloudinary integration for profile image hosting.
+- **Payments Gateway:** Razorpay SDK integration for online fee checkouts.
 
 ---
 
-## Folder Structure
+## Technical Stack & Folders
 
-```text
-BookMyDoc/
-├── admin/          # Admin & Doctor Management Panel (React + Tailwind CSS)
-├── backend/        # Express REST API (Node.js + MongoDB + Cloudinary + Razorpay)
-└── frontend/       # User/Patient Booking Portal (React + Tailwind CSS)
-```
+- **Frontend / Admin (React, Vite, Tailwind CSS v4, Axios, React Router, Toastify)**
+  - `/frontend` - Patient-facing appointment booking portal.
+  - `/admin` - Management panel for Admins and Doctors.
+- **Backend (Node.js, Express, MongoDB/Mongoose, Cloudinary, Razorpay, Multer)**
+  - `/backend` - Role-secured REST API.
 
 ---
 
-## API Documentation
+## API Routes Directory
 
-### Admin Endpoints (`/api/admin`)
-- `POST /login` - Log in Admin using credentials.
-- `POST /add-doctor` - Add new doctor details (includes image upload).
-- `POST /all-doctors` - Retrieve list of all doctors.
-- `POST /change-availability` - Toggle doctor's availability status.
-- `GET /appointments` - Retrieve list of all bookings.
-- `POST /cancel-appointment` - Cancel an appointment.
-- `GET /dashboard` - Fetch stats and latest bookings.
+### Admin (`/api/admin`)
+- `POST /login` - Log in Admin
+- `POST /add-doctor` - Add new doctor (with file upload)
+- `POST /all-doctors` - Fetch all doctors list
+- `POST /change-availability` - Toggle doctor availability
+- `GET /appointments` - Fetch all appointments
+- `POST /cancel-appointment` - Cancel an appointment
+- `GET /dashboard` - Fetch admin metrics & latest queue
 
-### User Endpoints (`/api/user`)
-- `POST /register` - Register a new patient account.
-- `POST /login` - Authenticate patient.
-- `POST /get-profile` - Get patient profile.
-- `POST /update-profile` - Update patient details (includes image upload).
-- `POST /book-appointment` - Register a slot with a doctor.
-- `GET /appointments` - Retrieve all appointments booked by user.
-- `POST /cancel-appointment` - Cancel booking.
-- `POST /payment-razor` - Initialize Razorpay checkout transaction.
-- `POST /verifyRazorpay` - Verify payments.
+### User (`/api/user`)
+- `POST /register` / `POST /login` - Patient sign-up & log-in
+- `POST /get-profile` / `POST /update-profile` - Patient profile handlers
+- `POST /book-appointment` - Register a slot with a doctor
+- `GET /appointments` / `POST /cancel-appointment` - Manage user bookings
+- `POST /payment-razor` / `POST /verifyRazorpay` - Online transaction integrations
 
-### Doctor Endpoints (`/api/doctor`)
-- `GET /list` - Fetch public doctor details.
-- `POST /login` - Doctor login.
-- `GET /appointments` - Fetch appointments list for logged-in doctor.
-- `POST /complete-appointment` - Complete appointment.
-- `POST /cancel-appointment` - Cancel appointment.
-- `GET /profile` - Retrieve doctor profile details.
-- `POST /update-profile` - Save edited doctor profile configurations.
-- `GET /dashboard` - Retrieve doctor stats and latest queues.
+### Doctor (`/api/doctor`)
+- `GET /list` - Public doctor directory list
+- `POST /login` - Doctor authentication
+- `GET /appointments` / `GET /dashboard` - Retrieve schedules & earnings
+- `POST /complete-appointment` / `POST /cancel-appointment` - Complete/Cancel appointments
+- `GET /profile` / `POST /update-profile` - Edit biography details
 
 ---
 
 ## Razorpay Payment Integration
 
-The application integrates **Razorpay** to facilitate online payments for booking checkouts.
-
-### Payment Workflow
+### Workflow
 ```mermaid
 sequenceDiagram
     participant User as Patient (Frontend)
@@ -96,91 +77,56 @@ sequenceDiagram
     participant Razorpay as Razorpay API
 
     User->>Server: Click "Pay Online" (POST /api/user/payment-razor)
-    Server->>Razorpay: Create Order (orders.create)
+    Server->>Razorpay: Initiate Order (orders.create)
     Razorpay-->>Server: Return Order details (id, amount, currency)
     Server-->>User: Return Order details
-    User->>User: Open Checkout Overlay (window.Razorpay)
-    User->>Razorpay: Complete Payment
+    User->>User: Open Overlay (window.Razorpay)
+    User->>Razorpay: Authenticate Payment
     Razorpay-->>User: Return payment response (payment_id, order_id, signature)
     User->>Server: Verify Transaction (POST /api/user/verifyRazorpay)
-    Server->>Razorpay: Fetch Order status (orders.fetch)
-    Server->>Server: Update appointment status (payment = true)
+    Server->>Razorpay: Fetch Order status
+    Server->>Server: Set appointment payment = true
     Server-->>User: Return success status
 ```
 
-### Integration Requirements
-1. **Frontend Script:** Ensure the Razorpay script is loaded in `frontend/index.html`:
-   ```html
-   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-   ```
-2. **Keys Setup:** Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in `backend/.env`, and `VITE_RAZORPAY_KEY_ID` in `frontend/.env`.
+### Script Setup
+Ensure the Razorpay script is loaded in `frontend/index.html`:
+```html
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+```
 
 ---
 
 ## Setup & Installation
 
-### Prerequisites
-- Node.js installed.
-- MongoDB Atlas cluster account.
-- Cloudinary credentials.
+### 1. Backend Server Setup
+Navigate to `/backend`, run `npm install`, and create a `.env` file:
+```env
+PORT=4000
+MONGODB_URI=<MongoDB_Connection_String>
+CLOUDINARY_NAME=<Cloudinary_Name>
+CLOUDINARY_API_KEY=<Cloudinary_Api_Key>
+CLOUDINARY_SECRET_KEY=<Cloudinary_Secret_Key>
+ADMIN_EMAIL=admin@bookmydoc.com
+ADMIN_PASSWORD=admin123
+JWT_SECRET=<JWT_Secret_Key>
+RAZORPAY_KEY_ID=<Razorpay_Key_Id>
+RAZORPAY_KEY_SECRET=<Razorpay_Key_Secret>
+CURRENCY=INR
+```
+Start server: `npm run server`
 
-### Installation Steps
+### 2. Patient Portal Setup
+Navigate to `/frontend`, run `npm install`, and create a `.env` file:
+```env
+VITE_BACKEND_URL=http://localhost:4000
+VITE_RAZORPAY_KEY_ID=<Razorpay_Key_Id>
+```
+Start portal: `npm run dev`
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository_url>
-   cd BookMyDoc
-   ```
-
-2. **Backend Server Setup**
-   ```bash
-   cd backend
-   npm install
-   ```
-   *Create a `.env` file inside `/backend` containing:*
-   ```env
-   PORT=4000
-   MONGODB_URI=<Your_MongoDB_URI>
-   CLOUDINARY_NAME=<Your_Cloudinary_Name>
-   CLOUDINARY_API_KEY=<Your_Cloudinary_API_Key>
-   CLOUDINARY_SECRET_KEY=<Your_Cloudinary_Secret_Key>
-   ADMIN_EMAIL=admin@bookmydoc.com
-   ADMIN_PASSWORD=admin123
-   JWT_SECRET=<Your_JWT_Secret_Key>
-   RAZORPAY_KEY_ID=<Your_Razorpay_Key_Id>
-   RAZORPAY_KEY_SECRET=<Your_Razorpay_Key_Secret>
-   CURRENCY=INR
-   ```
-   *Start API Server:*
-   ```bash
-   npm run server
-   ```
-
-3. **User Portal Setup**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
-   *Create a `.env` file inside `/frontend` containing:*
-   ```env
-   VITE_BACKEND_URL=http://localhost:4000
-   VITE_RAZORPAY_KEY_ID=<Your_Razorpay_Key_Id>
-   ```
-   *Start Portal:*
-   ```bash
-   npm run dev
-   ```
-
-4. **Admin/Doctor Panel Setup**
-   ```bash
-   cd ../admin
-   npm install
-   ```
-   *Create a `.env` file inside `/admin` containing:*
-   ```env
-   VITE_BACKEND_URL=http://localhost:4000
-   ```
-   *Start Panel:*
-   ```bash
-   npm run dev
-   ```
+### 3. Admin Panel Setup
+Navigate to `/admin`, run `npm install`, and create a `.env` file:
+```env
+VITE_BACKEND_URL=http://localhost:4000
+```
+Start panel: `npm run dev`
