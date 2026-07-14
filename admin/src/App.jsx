@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "./context/AdminContext";
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Admin/Dashboard";
 import DoctorsList from "./pages/Admin/DoctorsList";
 import AllAppointments from "./pages/Admin/AllAppointments";
@@ -21,7 +21,7 @@ const App = () => {
       <div className='flex items-start'>
         <Sidebar />
         <Routes>
-          <Route path="/" element={<></>} />
+          <Route path="/" element={<Navigate to="/admin-dashboard" />} />
           <Route path='/admin-dashboard' element={<Dashboard />} />
           <Route path='/doctor-list' element={<DoctorsList />} />
           <Route path='/all-appointments' element={<AllAppointments />} />
