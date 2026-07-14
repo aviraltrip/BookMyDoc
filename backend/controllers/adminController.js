@@ -87,9 +87,38 @@ const allDoctors = async (req, res) => {
 
 const appointmentAdmin = async (req, res) => {
     try {
-
         const appointments = await appointmentModel.find({}).sort({ date: -1 })
         res.json({ success: true, appointments })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+const appointmentCancel = async (req, res) => {
+    try {
+        const { appointmentId } = req.body
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        if (!appointmentData) {
+            return res.json({ success: false, message: 'Appointment not found' })
+        }
+
+        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
+
+        const { docId, slotDate, slotTime } = appointmentData
+
+        const doctorData = await doctorModel.findById(docId)
+
+        if (doctorData) {
+            let slots_booked = doctorData.slots_booked
+            if (slots_booked && slots_booked[slotDate]) {
+                slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
+            }
+            await doctorModel.findByIdAndUpdate(docId, { slots_booked })
+        }
+
+        res.json({ success: true, message: 'Appointment Cancelled' })
 
     } catch (error) {
         console.log(error)
@@ -97,5 +126,4 @@ const appointmentAdmin = async (req, res) => {
     }
 }
 
-
-export { addDoctor, loginAdmin, allDoctors, appointmentAdmin } 
+export { addDoctor, loginAdmin, allDoctors, appointmentAdmin, appointmentCancel }
