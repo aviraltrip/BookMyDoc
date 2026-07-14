@@ -84,6 +84,39 @@ BookMyDoc/
 
 ---
 
+## Razorpay Payment Integration
+
+The application integrates **Razorpay** to facilitate online payments for booking checkouts.
+
+### Payment Workflow
+```mermaid
+sequenceDiagram
+    participant User as Patient (Frontend)
+    participant Server as Backend API
+    participant Razorpay as Razorpay API
+
+    User->>Server: Click "Pay Online" (POST /api/user/payment-razor)
+    Server->>Razorpay: Create Order (orders.create)
+    Razorpay-->>Server: Return Order details (id, amount, currency)
+    Server-->>User: Return Order details
+    User->>User: Open Checkout Overlay (window.Razorpay)
+    User->>Razorpay: Complete Payment
+    Razorpay-->>User: Return payment response (payment_id, order_id, signature)
+    User->>Server: Verify Transaction (POST /api/user/verifyRazorpay)
+    Server->>Razorpay: Fetch Order status (orders.fetch)
+    Server->>Server: Update appointment status (payment = true)
+    Server-->>User: Return success status
+```
+
+### Integration Requirements
+1. **Frontend Script:** Ensure the Razorpay script is loaded in `frontend/index.html`:
+   ```html
+   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+   ```
+2. **Keys Setup:** Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in `backend/.env`, and `VITE_RAZORPAY_KEY_ID` in `frontend/.env`.
+
+---
+
 ## Setup & Installation
 
 ### Prerequisites
